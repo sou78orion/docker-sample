@@ -15,6 +15,9 @@ RUN yum update -y && \
     yum clean all && \
     rm -rf /var/cache/yum
 
+# tomcatユーザーとグループの作成
+RUN groupadd -r tomcat && useradd -r -g tomcat tomcat
+
 # sample.warをTomcatのwebappsディレクトリにコピー
 COPY ./sample.war /usr/local/tomcat/webapps/
 
@@ -27,3 +30,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
 
 # Tomcatを起動
 CMD ["/usr/local/tomcat/bin/catalina.sh", "run"]
+
+USER tomcat
