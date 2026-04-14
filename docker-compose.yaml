@@ -1,13 +1,23 @@
 services:
-  
+
   tomcat-server:
-    image: tomcat-app:latest
-    container_name: 'tomcat-container'
+    build: .
+    restart: unless-stopped
     ports:
       - 7001:8080
-      
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/sample/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
   reverse-proxy:
     image: nginx
+    restart: unless-stopped
+    depends_on:
+      tomcat-server:
+        condition: service_healthy
     volumes:
       - ./reverse-proxy/nginx.conf:/etc/nginx/nginx.conf
     ports:
